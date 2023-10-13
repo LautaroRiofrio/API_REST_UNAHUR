@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     nombre: DataTypes.STRING
   }, {});
   carrera.associate = function(models) {
-    // associations can be defined here
+    carrera.hasMany(models.Materia, {foreignKey:'id_carrera'});
   };
   return carrera;
 };
