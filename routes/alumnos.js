@@ -4,7 +4,7 @@ var models = require("../models");
 
 router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola :v");
-  models.Alumno
+  models.alumno
     .findAll({
       attributes: ["id", "nombre", "apellido"]
     })
@@ -13,7 +13,7 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  models.Alumno
+  models.alumno
     .create({ nombre: req.body.nombre, apellido: req.body.apellido })
     .then(alumno => res.status(201).send({ id: alumno.id }))
     .catch(error => {
@@ -27,8 +27,8 @@ router.post("/", (req, res) => {
     });
 });
 
-const findalumno = (id, { onSuccess, onNotFound, onError }) => {
-  models.Alumno
+const findAlumno = (id, { onSuccess, onNotFound, onError }) => {
+  models.alumno
     .findOne({
       attributes: ["id", "nombre", "apellido"],
       where: { id }
@@ -38,7 +38,7 @@ const findalumno = (id, { onSuccess, onNotFound, onError }) => {
 };
 
 router.get("/:id", (req, res) => {
-  findalumno(req.params.id, {
+  findAlumno(req.params.id, {
     onSuccess: alumno => res.send(alumno),
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
@@ -59,7 +59,7 @@ router.put("/:id", (req, res) => {
           res.sendStatus(500)
         }
       });
-    findalumno(req.params.id, {
+    findAlumno(req.params.id, {
     onSuccess,
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
@@ -72,7 +72,7 @@ router.delete("/:id", (req, res) => {
       .destroy()
       .then(() => res.sendStatus(200))
       .catch(() => res.sendStatus(500));
-  findalumno(req.params.id, {
+  findAlumno(req.params.id, {
     onSuccess,
     onNotFound: () => res.sendStatus(404),
     onError: () => res.sendStatus(500)
