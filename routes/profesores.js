@@ -2,15 +2,37 @@ var express = require("express");
 var router = express.Router();
 var models = require("../models");
 
-router.get("/", (req, res) => {
-  console.log("Esto es un mensaje para ver en consola :v");
-  models.profesor
-    .findAll({
-      attributes: ["id", "nombre", "apellido"]
+// router.get("/", (req, res) => {
+//   console.log("Esto es un mensaje para ver en consola :v");
+//   models.profesor
+//     .findAll({
+//       attributes: ["id", "nombre", "apellido"]
+//     })
+//     .then(profesores => res.send(profesores))
+//     .catch(() => res.sendStatus(500));
+// });
+
+router.get("/", async (req, res) => {
+  try {
+    const page = req.query.page || 1;
+    const pageSize = req.query.pageSize || 5;
+
+    const offset = (page - 1) * pageSize;
+
+    const profesores = await models.profesor.findAll({
+      attributes: ['id', 'nombre', 'apellido'],
+      limit: parseInt(pageSize),
+      offset: parseInt(offset),
+      order: [['createdAt', 'ASC']],
     })
-    .then(profesores => res.send(profesores))
-    .catch(() => res.sendStatus(500));
-});
+
+    res.json(profesores);
+  } catch (error) {
+    console.error('Error en la consulta', error);
+    res.status(500).send('Error interno del servidor')
+  }
+})
+
 
 router.post("/", (req, res) => {
   models.profesor
