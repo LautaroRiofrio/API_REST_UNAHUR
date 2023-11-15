@@ -2,14 +2,35 @@ var express = require("express");
 var router = express.Router();
 var models = require("../models");
 
-router.get("/", (req, res) => {
-  console.log("Esto es un mensaje para ver en consola :v");
-  models.comision
-    .findAll({
-      attributes: ["id", "nombre", "id_materia"]
-    })
-    .then(comisiones => res.send(comisiones))
-    .catch(() => res.sendStatus(500));
+// router.get("/", (req, res) => {
+//   console.log("Esto es un mensaje para ver en consola :v");
+//   models.comision
+//     .findAll({
+//       attributes: ["id", "nombre", "id_materia"]
+//     })
+//     .then(comisiones => res.send(comisiones))
+//     .catch(() => res.sendStatus(500));
+// });
+
+router.get('/', async (req, res) => {
+  try {
+    const page = req.query.page || 1;
+    const pageSize = req.query.pageSize || 5;
+
+    const offset = (page - 1) * pageSize;
+
+    const comisiones = await models.comision.findAll({
+      attributes: ['id', 'nombre', 'id_materia'],
+      limit: parseInt(pageSize),
+      offset: parseInt(offset),
+      order: [['createdAt', 'ASC']],
+    });
+
+    res.json(comisiones);
+  } catch (error) {
+    console.error('Error en la consulta:', error);
+    res.status(500).send('Error interno del servidor');
+  }
 });
 
 router.post("/", (req, res) => {
